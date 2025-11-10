@@ -4,29 +4,49 @@ import { MdDelete } from "react-icons/md";
 import { FaSave } from "react-icons/fa";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
-const TodoItem = ({
-  id,
-  title,
-  status,
-  handleTodoStatusChange,
-  handleTodoDelete,
-  changeParentTodoTitle,
-  todoId,
-  setTodoId,
-}) => {
-  const [todoTitle, setTodoTitle] = useState(title);
-  const [disabled, setDisabled] = useState(true);
+import {
+  setReduxTodos,
+  addTodo,
+  deleteTodo,
+  updateTodoStatus,
+  updateTodoTitle,
+  setTodoSelectedEditId
+} from "../app/features/todos/todosSlice";
+import { useDispatch, useSelector } from "react-redux";
 
-  const handleEditTodoTitle = () => {
-    if (disabled) {
-      setDisabled(false);
-    } else {
-      setDisabled(true);
-      if (title !== todoTitle) {
-        changeParentTodoTitle(id, todoTitle);
-      }
+const TodoItem = ({ id, title, status, setTodoId }) => {
+  const { todoSelectedEditId } = useSelector((state) => {
+    return state.todos;
+  });
+  const dispatch = useDispatch();
+
+  const [todoTitle, setTodoTitle] = useState(title);
+  // const [disabled, setDisabled] = useState(true);
+
+  // const handleEditTodoTitle = () => {
+  //   if (disabled) {
+  //     setDisabled(false);
+  //   } else {
+  //     setDisabled(true);
+  //     if (title !== todoTitle) {
+  //       // changeParentTodoTitle(id, todoTitle);
+  //       dispatch(updateTodoTitle(todoSelectedIdEdit, todoTitle));
+  //     }
+  //   }
+  // };
+
+  const handleEditTodoTitle = () =>{
+    if(todoSelectedEditId===-1){
+      dispatch(setTodoSelectedEditId(id));
     }
-  };
+    else if(todoSelectedEditId===id){
+      dispatch(updateTodoTitle({id, todoTitle}));
+      dispatch(setTodoSelectedEditId(-1));
+    }
+    else if(todoSelectedEditId!==id){
+      dispatch(setTodoSelectedEditId(id));
+    }
+    }
 
   const handleChangeTodoTitle = (e) => {
     setTodoTitle(e.target.value);
@@ -45,18 +65,15 @@ const TodoItem = ({
         margin: "1rem",
       }}
     >
-     {
-      todoId===id?
-      ( <input
-        value={todoTitle}
-        disabled={disabled}
-        onChange={handleChangeTodoTitle}
-        style={{ width: "300px" }}
-      />):
-      (
+      {todoSelectedEditId === id ? (
+        <input
+          value={todoTitle}
+          onChange={handleChangeTodoTitle}
+          style={{ width: "300px" }}
+        />
+      ) : (
         <label style={{ width: "300px" }}>{todoTitle}</label>
-      )
-     }
+      )}
 
       <div>
         <button
@@ -68,17 +85,16 @@ const TodoItem = ({
             padding: "5px",
             borderRadius: "3px",
           }}
-          onClick={()=>{
-            if(disabled){
-              setTodoId(id);
-            }
-            else{
-              setTodoId(null);
-            }
+          onClick={() => {
+            // if (disabled) {
+            //   setTodoId(id);
+            // } else {
+            //   setTodoId(null);
+            // }
             handleEditTodoTitle();
           }}
         >
-          {disabled ? <MdModeEdit /> : <FaSave />}
+          {todoSelectedEditId !== id  ? <MdModeEdit /> : <FaSave />}
         </button>
         <button
           style={{
@@ -89,7 +105,7 @@ const TodoItem = ({
             padding: "5px",
             borderRadius: "3px",
           }}
-          onClick={() => handleTodoDelete(id)}
+          onClick={() => dispatch(deleteTodo(id))}
         >
           <MdDelete />
         </button>
@@ -101,7 +117,7 @@ const TodoItem = ({
             padding: "5px",
             borderRadius: "3px",
           }}
-          onClick={() => handleTodoStatusChange(id)}
+          onClick={() => dispatch(updateTodoStatus(id))}
         >
           {status === "completed" ? <FaArrowLeft /> : <FaArrowRight />}
         </button>

@@ -1,7 +1,13 @@
 import React from "react";
+import { useSelector } from "react-redux";
+
 import TodoItem from "./TodoItem";
 
-const CompletedTaskList = ({ completedTodos, handleTodoStatusChange, handleTodoDelete , changeParentTodoTitle,  todoId, setTodoId}) => {
+const CompletedTaskList = ({   changeParentTodoTitle,  todoId, setTodoId}) => {
+    const {todos} =useSelector(state=>state.todos);
+
+  const pendingTodos = todos.filter(todo=>todo.status.toLowerCase() === "completed");
+
   return (
     <div
       style={{
@@ -15,8 +21,8 @@ const CompletedTaskList = ({ completedTodos, handleTodoStatusChange, handleTodoD
     >
       <h2 style={{ marginLeft: "1rem" }}>Completed Tasks</h2>
       <ul>
-        {completedTodos.map((todo) => {
-          return <TodoItem key={todo.id} {...todo} handleTodoStatusChange={handleTodoStatusChange} handleTodoDelete={handleTodoDelete} changeParentTodoTitle={changeParentTodoTitle} todoId={todoId}
+        {pendingTodos.map((todo) => {
+          return <TodoItem key={todo.id} {...todo} changeParentTodoTitle={changeParentTodoTitle} todoId={todoId}
           setTodoId={setTodoId}/>;
         })}
       </ul>

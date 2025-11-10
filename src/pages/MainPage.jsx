@@ -1,41 +1,56 @@
 import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import axios from 'axios';
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
 
 import { todosData } from "../data/todos";
+import {
+  setReduxTodos,
+  addTodo,
+  deleteTodo,
+  updateTodoStatus,
+  updateTodoTitle,
+} from "../app/features/todos/todosSlice";
 import PendingTaskList from "../components/PendingTaskList";
 import CompletedTaskList from "../components/CompletedTaskList";
 
 const MainPage = () => {
-  const [todos, setTodos] = useState(todosData ||[]);
+  const reduxTodos = useSelector((state) => state.todos.todos);
+  const dispatch = useDispatch();
+
+  // const [todos, setTodos] = useState(todosData ||[]);
   const [todoTitle, setTodoTitle] = useState("");
   const [todoId, setTodoId] = useState(null);
 
-  useEffect(()=>{
-    axios.get('https://dummyjson.com/todos?limit=10')
-    .then(res=>{
-      const fetchedTodos = res.data.todos;
-      const formattedTodos = fetchedTodos.map(todo=>{
-        return {
-          id: todo.id,
-          title: todo.todo,
-          status: todo.completed?"completed":"pending"
-        }
+  useEffect(() => {
+    axios
+      .get("https://dummyjson.com/todos?limit=10")
+      .then((res) => {
+        const fetchedTodos = res.data.todos;
+        const formattedTodos = fetchedTodos.map((todo) => {
+          return {
+            id: todo.id,
+            title: todo.todo,
+            status: todo.completed ? "completed" : "pending",
+          };
+        });
+        // setTodos(formattedTodos);
+
+        dispatch(setReduxTodos(formattedTodos));
       })
-      setTodos(formattedTodos);
-    })
-    .catch(err=>{
-      console.log(err)
-    })
-  }, [])
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+  console.log(reduxTodos);
 
-  const pendingTodos = todos.filter((todo) => {
-    return todo.status.toLowerCase() === "pending";
-  });
+  // const pendingTodos = reduxTodos.filter((todo) => {
+  //   return todo.status.toLowerCase() === "pending";
+  // });
 
-  const completedTodos = todos.filter((todo) => {
-    return todo.status.toLowerCase() === "completed";
-  });
+  // const completedTodos = reduxTodos.filter((todo) => {
+  //   return todo.status.toLowerCase() === "completed";
+  // });
 
   const handleTodoTitleChange = (e) => {
     setTodoTitle(e.target.value);
@@ -53,29 +68,32 @@ const MainPage = () => {
       title: todoTitle,
       status: "pending",
     };
-    setTodos((prev) => [...prev, todoTemp]);
+    // setTodos((prev) => [...prev, todoTemp]);
     setTodoTitle("");
+
+    dispatch(addTodo(todoTemp));
     alert("Added todo successfully");
   };
 
-  const handleTodoStatusChange = (id) => {
-    setTodos((prevTodos) =>
-      prevTodos.map((todo) =>
-        todo.id === id
-          ? {
-              ...todo,
-              status: todo.status === "completed" ? "pending" : "completed",
-            }
-          : todo
-      )
-    );
-  };
+  // const handleTodoStatusChange = (id) => {
+  //   setTodos((prevTodos) =>
+  //     prevTodos.map((todo) =>
+  //       todo.id === id
+  //         ? {
+  //             ...todo,
+  //             status: todo.status === "completed" ? "pending" : "completed",
+  //           }
+  //         : todo
+  //     )
+  //   );
+  // };
 
-  const handleTodoDelete = (id) => {
-    setTodos((prevTodos) => {
-      return prevTodos.filter((todo) => todo.id !== id);
-    });
-  };
+  // const handleTodoDelete = (id) => {
+  //   setTodos((prevTodos) => {
+  //     return prevTodos.filter((todo) => todo.id !== id);
+  //   });
+
+  // };
 
   const changeParentTodoTitle = (id, title) => {
     console.log(id, title);
@@ -84,6 +102,7 @@ const MainPage = () => {
         return todo.id === id ? { ...todo, title: title } : todo;
       });
     });
+
   };
 
   return (
@@ -119,7 +138,6 @@ const MainPage = () => {
               borderRadius: "1rem",
             }}
             type="submit"
-            onClick={handleAddTodo}
           >
             Submit
           </button>
@@ -134,17 +152,11 @@ const MainPage = () => {
         }}
       >
         <PendingTaskList
-          pendingTodos={pendingTodos}
-          handleTodoStatusChange={handleTodoStatusChange}
-          handleTodoDelete={handleTodoDelete}
           changeParentTodoTitle={changeParentTodoTitle}
           todoId={todoId}
           setTodoId={setTodoId}
         />
         <CompletedTaskList
-          completedTodos={completedTodos}
-          handleTodoStatusChange={handleTodoStatusChange}
-          handleTodoDelete={handleTodoDelete}
           changeParentTodoTitle={changeParentTodoTitle}
           todoId={todoId}
           setTodoId={setTodoId}
