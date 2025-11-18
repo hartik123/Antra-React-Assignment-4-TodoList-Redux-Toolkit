@@ -1,7 +1,12 @@
 [Project Continued from Assignment 3: Todo with simple State Management -> Redux Toolkit]
 
-# Todo Project
+# Todo Redux Project
 Live Link: [https://todolist-redux-app.netlify.app/](https://todolist-redux-app.netlify.app/)
+
+# Todo Redux Demo 
+
+https://github.com/user-attachments/assets/99630568-1b9e-4d76-a50c-338f880b5bcd
+
 
 # Antra-React-Assignment-3 
 
