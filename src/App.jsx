@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Provider } from 'react-redux'
-import store from './app/store'
+import store from './redux/store'
 
 import './App.css'
 import MainPage from './pages/MainPage'

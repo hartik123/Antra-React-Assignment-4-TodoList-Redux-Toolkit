@@ -10,7 +10,7 @@ import {
   deleteTodo,
   updateTodoStatus,
   updateTodoTitle,
-} from "../app/features/todos/todosSlice";
+} from "../redux/features/todos/todosSlice";
 import PendingTaskList from "../components/PendingTaskList";
 import CompletedTaskList from "../components/CompletedTaskList";
 

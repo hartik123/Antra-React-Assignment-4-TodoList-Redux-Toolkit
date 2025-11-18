@@ -11,7 +11,7 @@ import {
   updateTodoStatus,
   updateTodoTitle,
   setTodoSelectedEditId
-} from "../app/features/todos/todosSlice";
+} from "../redux/features/todos/todosSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const TodoItem = ({ id, title, status, setTodoId }) => {
